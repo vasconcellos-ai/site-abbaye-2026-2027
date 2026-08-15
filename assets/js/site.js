@@ -52,9 +52,9 @@
 
     host.innerHTML = `
       <div class="site-topbar">
-        <div class="container">
-          <span>Maison Abbaye · Année scolaire 2026-2027</span>
-          <span>300 élèves demi-pensionnaires</span>
+        <div class="container" style="flex-direction:column; align-items:center; text-align:center; gap:1px;">
+          <span style="font-weight:700;">Maison Abbaye</span>
+          <span>Année scolaire 2026-2027</span>
         </div>
       </div>
       <nav class="site-nav">
