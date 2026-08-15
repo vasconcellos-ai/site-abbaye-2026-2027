@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tournoi de Jeux Vidéo — Maison Abbaye</title>
+<link rel="icon" href="../../assets/img/crest-smf.png">
+<link rel="stylesheet" href="../../assets/css/style.css">
+</head>
+<body data-page="jeuxvideo">
+<div id="site-header"></div>
+
+<header class="page-hero">
+  <div class="container">
+    <div class="admin-bar">
+      <button id="adminToggleBtn" class="admin-toggle-btn" onclick="Tournoi.toggleAdmin()">🔒 Connexion Admin</button>
+    </div>
+    <div class="breadcrumbs"><a href="../../index.html">Accueil</a> / Tournois / Jeux vidéo</div>
+    <h1 id="headerTitle" class="editable-title">Tournoi de Jeux Vidéo</h1>
+    <p id="headerSub" class="editable-subtitle lead">Phase de poule, classement et phases éliminatoires (2026-2027)</p>
+    <div class="tabs-container"><div id="tabTag" class="tag-pill">🎮 Jeux vidéo</div></div>
+  </div>
+</header>
+
+<main class="tournoi-page">
+  <div class="container">
+    <p id="syncStatus" class="sync-status">Chargement…</p>
+
+    <div class="main-grid">
+      <section class="card">
+        <div class="card-header">
+          <h2 class="card-title">Phase de Poule / Championnat</h2>
+          <button class="btn btn-add admin-only" onclick="Tournoi.add('Poule')">+ Rencontre</button>
+        </div>
+        <div class="table-wrapper">
+          <table>
+            <thead><tr><th style="width:18%;">Date</th><th style="width:28%;">Joueur</th><th style="width:20%;">Score</th><th style="width:28%;">Joueur</th><th class="admin-only" style="width:6%;"></th></tr></thead>
+            <tbody id="pouleTableBody"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="card-header">
+          <h2 class="card-title">🏆 Classement</h2>
+          <span style="font-size:0.8rem;color:var(--text-muted);">V=3pts | N=1pt | D=0pt</span>
+        </div>
+        <div class="table-wrapper">
+          <table class="standings-table">
+            <thead><tr><th style="width:10%;">#</th><th style="width:40%;text-align:left;">Joueur</th><th style="width:12%;">J</th><th style="width:12%;">V</th><th style="width:12%;">N</th><th style="width:12%;">D</th><th style="width:14%;">Pts</th></tr></thead>
+            <tbody id="standingsTableBody"></tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+
+    <section class="full-width-card">
+      <div class="card-header" style="border-bottom:2px solid var(--border); padding-bottom:12px; margin-bottom:20px;">
+        <h2 class="card-title" style="font-size:1.5rem;">🥇 Phases Éliminatoires</h2>
+      </div>
+      <div id="knockoutContainer"></div>
+    </section>
+  </div>
+</main>
+
+<div id="site-footer"></div>
+
+<script>window.SITE_ROOT = "../../";</script>
+<script src="../../assets/js/site.js"></script>
+<script src="../../assets/js/airtable-config.js"></script>
+<script>
+  window.TOURNOI_CONFIG = {
+    tournoi: "Jeux vidéo",
+    title: "Tournoi de Jeux Vidéo",
+    subtitle: "Phase de poule, classement et phases éliminatoires (2026-2027)",
+    tag: "🎮 Jeux vidéo"
+  };
+</script>
+<script src="../../assets/js/tournoi.js"></script>
+</body>
+</html>

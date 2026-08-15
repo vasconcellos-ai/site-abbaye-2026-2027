@@ -1,0 +1,17 @@
+.DS_Store
+
+# Extraction brute du site 2025-2026 : contient des données personnelles
+# d'élèves (noms, classes) issues des anciens tournois. Gardé en local
+# uniquement, pas publié sur le dépôt public GitHub.
+contenu-source-2025-2026.md
+
+# Fichiers logo/affiche bruts non utilisés par le site (variantes fournies
+# mais pas retenues, gardés en local pour référence future).
+assets/img/Affiche_Entrée ABBAYE.png
+assets/img/Fond Doré.png
+assets/img/Fond Vert.png
+assets/img/Fond blanc.png
+assets/img/Fond noir.png
+assets/img/Vert_Noir.png
+assets/img/crest-smf-vert.png
+assets/img/logo-smf-full.png
