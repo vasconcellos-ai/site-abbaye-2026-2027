@@ -20,7 +20,7 @@
 */
 
 window.AIRTABLE_CONFIG = {
-  token: "COLLEZ_VOTRE_TOKEN_ICI",
+  token: "patX1azwaNiFEDwk0.7de037225e8cc2b513352dab8df4c18a85770e91d2b0d6ea0fda6ab00900271a",
   baseId: "app3oF7VSf5Gqym0t",
   tableId: "tblmvsfP18ytKLdba",
 };
