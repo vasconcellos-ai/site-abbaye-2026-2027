@@ -10,10 +10,12 @@
 
   const NAV = [
     { key: "accueil", label: "Accueil", href: "index.html" },
+    { key: "pointages", label: "Pointages Abbaye", href: "pointages-abbaye.html" },
     { key: "reglement", label: "Règlement Abbaye", href: "reglement-abbaye.html" },
-    { key: "calendrier", label: "Calendrier des tournois", href: "calendrier.html" },
-    { key: "cafe", label: "Café des Idées", href: "cafe-des-idees.html" },
     { key: "conseil", label: "Conseil de maison", href: "conseil-de-maison.html" },
+    { key: "sah", label: "SAH", href: "sah.html" },
+    { key: "cafe", label: "Café des Idées", href: "cafe-des-idees.html" },
+    { key: "calendrier", label: "Calendrier des tournois", href: "calendrier.html" },
     {
       key: "tournois",
       label: "Tournois",
@@ -101,10 +103,12 @@
             <h4>Navigation</h4>
             <ul>
               <li><a href="${ROOT}index.html">Accueil</a></li>
+              <li><a href="${ROOT}pointages-abbaye.html">Pointages Abbaye</a></li>
               <li><a href="${ROOT}reglement-abbaye.html">Règlement Abbaye</a></li>
-              <li><a href="${ROOT}calendrier.html">Calendrier des tournois</a></li>
-              <li><a href="${ROOT}cafe-des-idees.html">Café des Idées</a></li>
               <li><a href="${ROOT}conseil-de-maison.html">Conseil de maison</a></li>
+              <li><a href="${ROOT}sah.html">SAH</a></li>
+              <li><a href="${ROOT}cafe-des-idees.html">Café des Idées</a></li>
+              <li><a href="${ROOT}calendrier.html">Calendrier des tournois</a></li>
             </ul>
           </div>
           <div>
