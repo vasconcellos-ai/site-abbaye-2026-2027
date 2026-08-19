@@ -197,18 +197,18 @@ img { max-width: 100%; display: block; }
 
 .intro-row {
   display: flex;
-  gap: 20px;
-  align-items: flex-start;
+  gap: 28px;
+  align-items: center;
   flex-wrap: wrap;
-  margin-bottom: 8px;
+  margin-bottom: 36px;
 }
 .intro-text { flex: 2 1 360px; }
 .intro-poster {
   flex: 1 1 160px;
-  max-width: 200px;
+  max-width: 180px;
   border-radius: var(--radius);
   box-shadow: var(--shadow-lg);
-  margin: -18px 0 0;
+  margin: 0;
 }
 .pointage-card {
   background: var(--card);
