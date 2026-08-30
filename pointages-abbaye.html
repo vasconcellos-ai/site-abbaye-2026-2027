@@ -12,6 +12,9 @@
 
 <header class="page-hero">
   <div class="container">
+    <div class="admin-bar">
+      <button id="adminToggleBtn" class="admin-toggle-btn" onclick="PointageToggle.toggleAdmin()">🔒 Connexion Admin</button>
+    </div>
     <div class="breadcrumbs"><a href="index.html">Accueil</a> / Pointages Abbaye</div>
     <h1>Pointages Abbaye</h1>
     <p class="lead">Enregistrez votre présence à l'Abbaye en quelques secondes.</p>
@@ -20,9 +23,11 @@
 
 <main class="section">
   <div class="container">
+    <p id="pointageStatus" class="sync-status">Chargement…</p>
     <div class="pointage-card pointage-card--centered">
-      <iframe class="airtable-embed" src="https://airtable.com/embed/appTif4wczWWlDSWO/pagKrGrVZJUobOfJJ/form" frameborder="0" width="100%" height="820"></iframe>
+      <div id="pointageContent"></div>
     </div>
+    <div id="pointageAdminControls" class="admin-only" style="text-align:center; margin-top:-16px; margin-bottom:32px;"></div>
   </div>
 </main>
 
@@ -30,5 +35,7 @@
 
 <script>window.SITE_ROOT = "./";</script>
 <script src="assets/js/site.js"></script>
+<script src="assets/js/airtable-config.js"></script>
+<script src="assets/js/pointage-toggle.js"></script>
 </body>
 </html>
