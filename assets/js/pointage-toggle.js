@@ -21,6 +21,7 @@
     const { token, baseId } = window.AIRTABLE_CONFIG;
     const res = await fetch(`https://api.airtable.com/v0/${baseId}/${TABLE_ID}/${RECORD_ID}`, {
       method,
+      cache: "no-store",
       headers: {
         Authorization: `Bearer ${token}`,
         "Content-Type": "application/json",
@@ -52,35 +53,48 @@
     }
   }
 
-  function renderAdminControls(actif) {
+  function renderAdminControls(actif, busy) {
     const host = document.getElementById("pointageAdminControls");
     if (!host) return;
-    host.innerHTML = actif
-      ? `<button class="btn btn-reset" onclick="PointageToggle.setActif(false)">⛔ Désactiver le pointage en ligne</button>`
-      : `<button class="btn btn-add" onclick="PointageToggle.setActif(true)">✅ Activer le pointage en ligne</button>`;
+    host.innerHTML = `
+      <button class="btn btn-add" ${actif || busy ? "disabled" : ""} onclick="PointageToggle.setActif(true)">✅ Activer le pointage en ligne</button>
+      <button class="btn btn-reset" ${!actif || busy ? "disabled" : ""} onclick="PointageToggle.setActif(false)">⛔ Désactiver le pointage en ligne</button>
+      <div style="margin-top:8px; font-size:0.8rem; color:var(--text-muted);">État actuel : ${actif ? "activé ✅" : "désactivé ⛔"}</div>
+    `;
   }
 
+  let requestSeq = 0;
+
   async function load() {
+    const seq = ++requestSeq;
     setStatus("Chargement…");
     try {
       const rec = await airtableRequest("GET");
+      if (seq !== requestSeq) return; // une requête plus récente a déjà répondu
       const actif = !!(rec.fields && rec.fields.Actif);
       renderContent(actif);
-      renderAdminControls(actif);
+      renderAdminControls(actif, false);
       setStatus(actif ? "🟢 Pointage en ligne activé" : "⚪ Pointage en ligne désactivé — présence enregistrée par QR code");
     } catch (e) {
+      if (seq !== requestSeq) return;
       setStatus("⚠️ Impossible de vérifier l'état du pointage : " + e.message, true);
       renderContent(false);
     }
   }
 
   async function setActif(value) {
+    renderAdminControls(value, true);
     setStatus("Enregistrement…");
     try {
-      await airtableRequest("PATCH", { fields: { Actif: value } });
+      const updated = await airtableRequest("PATCH", { fields: { Actif: value } });
+      const confirmedActif = !!(updated.fields && updated.fields.Actif);
+      if (confirmedActif !== value) {
+        setStatus("⚠️ Airtable n'a pas confirmé le changement, nouvelle tentative…", true);
+      }
       await load();
     } catch (e) {
       setStatus("⚠️ Échec de l'enregistrement : " + e.message, true);
+      await load();
     }
   }
 
