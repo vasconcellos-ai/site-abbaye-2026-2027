@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pointages Cantine — Maison Abbaye</title>
+<link rel="icon" href="assets/img/crest-smf.png">
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body data-page="pointages-cantine">
+<div id="site-header"></div>
+
+<header class="page-hero">
+  <div class="container">
+    <div class="admin-bar">
+      <button id="adminToggleBtn" class="admin-toggle-btn" onclick="PointageCantineToggle.toggleAdmin()">🔒 Connexion Admin</button>
+    </div>
+    <div class="breadcrumbs"><a href="index.html">Accueil</a> / Pointages Cantine</div>
+    <h1>Pointages Cantine</h1>
+    <p class="lead">Confirmez votre présence à la cantine en quelques secondes.</p>
+  </div>
+</header>
+
+<main class="section">
+  <div class="container">
+    <p id="pointageStatus" class="sync-status">Chargement…</p>
+    <div class="pointage-card pointage-card--centered">
+      <div id="pointageContent"></div>
+    </div>
+    <div id="pointageAdminControls" class="admin-only" style="text-align:center; margin-top:-16px; margin-bottom:32px;"></div>
+  </div>
+</main>
+
+<div id="site-footer"></div>
+
+<script>window.SITE_ROOT = "./";</script>
+<script src="assets/js/site.js"></script>
+<script src="assets/js/airtable-config.js"></script>
+<script src="assets/js/pointage-toggle-cantine.js"></script>
+</body>
+</html>

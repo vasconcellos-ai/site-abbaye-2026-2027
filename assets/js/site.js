@@ -11,6 +11,7 @@
   const NAV = [
     { key: "accueil", label: "Accueil", href: "index.html" },
     { key: "pointages", label: "Pointages Abbaye", href: "pointages-abbaye.html" },
+    { key: "pointages-cantine", label: "Pointages Cantine", href: "pointages-cantine.html" },
     { key: "reglement", label: "Règlement Abbaye", href: "reglement-abbaye.html" },
     { key: "conseil", label: "Conseil de maison", href: "conseil-de-maison.html" },
     { key: "sah", label: "SAH", href: "sah.html" },
@@ -104,6 +105,7 @@
             <ul>
               <li><a href="${ROOT}index.html">Accueil</a></li>
               <li><a href="${ROOT}pointages-abbaye.html">Pointages Abbaye</a></li>
+              <li><a href="${ROOT}pointages-cantine.html">Pointages Cantine</a></li>
               <li><a href="${ROOT}reglement-abbaye.html">Règlement Abbaye</a></li>
               <li><a href="${ROOT}conseil-de-maison.html">Conseil de maison</a></li>
               <li><a href="${ROOT}sah.html">SAH</a></li>
