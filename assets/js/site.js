@@ -78,7 +78,7 @@
 
     host.querySelectorAll(".nav-dropdown > a").forEach((a) => {
       a.addEventListener("click", () => {
-        if (window.innerWidth <= 900) {
+        if (window.innerWidth <= 1180) {
           a.parentElement.classList.toggle("open");
         }
       });
