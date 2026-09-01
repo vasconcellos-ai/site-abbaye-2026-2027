@@ -25,6 +25,12 @@ window.AIRTABLE_CONFIG = {
   tableId: "tblmvsfP18ytKLdba",
 };
 
-/* Mot de passe pour activer le mode Admin (saisie des scores) sur les
-   pages de tournoi. Changez-le si vous voulez. */
+/* Mot de passe pour activer le mode Admin (saisie des scores, activer/
+   désactiver le pointage) sur les pages de tournoi et de pointage.
+   Changez-le si vous voulez. */
 window.ADMIN_PASSWORD = "abbaye2027";
+
+/* Mot de passe donné aux élèves/AED pour débloquer les formulaires de
+   pointage (Abbaye et Cantine) quand l'accès n'est pas ouvert à tous.
+   Différent du mot de passe Admin ci-dessus. */
+window.ACCESS_PASSWORD = "ABB27";

@@ -230,6 +230,11 @@ img { max-width: 100%; display: block; }
   border-radius: 8px;
   display: block;
 }
+#pointageAdminControls.admin-only {
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+}
 @media (max-width: 700px) {
   .intro-row { flex-direction: column; }
   .intro-poster { max-width: 220px; margin: 8px auto 0; }
