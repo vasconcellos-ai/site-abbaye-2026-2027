@@ -1,14 +1,16 @@
 /*
-  Active/désactive le formulaire de pointage en ligne sur pointages-abbaye.html,
+  Active/désactive le formulaire de pointage en ligne sur pointages-cantine.html,
   et protège l'accès à ce formulaire par un mot de passe partagé (pour éviter
-  qu'un élève absent de la cantine/l'Abbaye ne pointe quand même depuis
-  n'importe où). État partagé via Airtable (table "Config") pour que tous les
-  visiteurs voient le même état, quel que soit l'appareil.
+  qu'un élève absent de la cantine ne pointe quand même depuis n'importe où).
+  État partagé via Airtable (table "Config") pour que tous les visiteurs voient
+  le même état, quel que soit l'appareil. Même principe que pointage-toggle.js
+  (Abbaye), mais avec son propre enregistrement de config et son propre
+  formulaire embarqué (table "Pointages Cantine").
 */
 
 (function () {
   const TABLE_ID = "tbliDL8fiQy5yPb4n";
-  const RECORD_ID = "recRDcmKip5fNWeAF";
+  const RECORD_ID = "recftQJ9Sd3uDoWbe";
   const UNLOCK_KEY = "pointageAccesDebloque";
 
   let isAdmin = false;
@@ -64,12 +66,12 @@
         <div style="font-size:2.4rem; margin-bottom:12px;">🔑</div>
         <h3 style="color:var(--forest-dark); margin-bottom:8px;">Accès protégé</h3>
         <p style="color:var(--text-muted); max-width:480px; margin:0 auto 16px;">
-          Ce formulaire est réservé aux élèves réellement présents à l'Abbaye.
+          Ce formulaire est réservé aux élèves réellement présents à la cantine.
           Entrez le mot de passe qui vous a été communiqué pour y accéder.
         </p>
         <div style="display:flex; gap:8px; justify-content:center; flex-wrap:wrap; max-width:360px; margin:0 auto;">
           <input type="password" id="pointageAccesInput" placeholder="Mot de passe" style="flex:1 1 180px; padding:10px 12px; border:1px solid var(--border); border-radius:8px;">
-          <button class="btn btn-add" onclick="PointageToggle.tryUnlock()">Valider</button>
+          <button class="btn btn-add" onclick="PointageCantineToggle.tryUnlock()">Valider</button>
         </div>
         <p id="pointageAccesError" style="color:#b00020; margin-top:10px; font-size:0.85rem;"></p>
       </div>`;
@@ -104,15 +106,15 @@
           <div style="font-size:2.4rem; margin-bottom:12px;">🔒</div>
           <h3 style="color:var(--forest-dark); margin-bottom:8px;">Pointage en ligne désactivé</h3>
           <p style="color:var(--text-muted); max-width:480px; margin:0 auto;">
-            La présence à l'Abbaye est actuellement enregistrée par lecture du QR code
-            de la carte de lycéen à l'entrée. Ce formulaire sera réactivé ici si besoin
+            La présence à la cantine est actuellement enregistrée par lecture du QR code
+            de la carte de lycéen. Ce formulaire sera réactivé ici si besoin
             (panne de réseau, lecteur QR indisponible, etc.).
           </p>
         </div>`;
       return;
     }
     if (accesLibre || isUnlocked()) {
-      host.innerHTML = `<iframe class="airtable-embed" src="https://airtable.com/embed/appTif4wczWWlDSWO/pagKrGrVZJUobOfJJ/form" frameborder="0" width="100%" height="820"></iframe>`;
+      host.innerHTML = `<iframe class="airtable-embed" src="https://airtable.com/embed/appTif4wczWWlDSWO/pagFFOjeUKkQ3TOtK/form" frameborder="0" width="100%" height="820"></iframe>`;
       return;
     }
     renderPasswordGate();
@@ -122,12 +124,12 @@
     const host = document.getElementById("pointageAdminControls");
     if (!host) return;
     host.innerHTML = `
-      <button class="btn btn-add" ${actif || busy ? "disabled" : ""} onclick="PointageToggle.setActif(true)">✅ Activer le pointage en ligne</button>
-      <button class="btn btn-reset" ${!actif || busy ? "disabled" : ""} onclick="PointageToggle.setActif(false)">⛔ Désactiver le pointage en ligne</button>
+      <button class="btn btn-add" ${actif || busy ? "disabled" : ""} onclick="PointageCantineToggle.setActif(true)">✅ Activer le pointage en ligne</button>
+      <button class="btn btn-reset" ${!actif || busy ? "disabled" : ""} onclick="PointageCantineToggle.setActif(false)">⛔ Désactiver le pointage en ligne</button>
       <div style="margin-top:8px; font-size:0.8rem; color:var(--text-muted);">État actuel : ${actif ? "activé ✅" : "désactivé ⛔"}</div>
       <div style="margin-top:14px; display:flex; gap:8px; flex-wrap:wrap; justify-content:center;">
-        <button class="btn btn-add" ${accesLibre || busy ? "disabled" : ""} onclick="PointageToggle.setAccesLibre(true)">🔓 Autoriser l'accès à tous (sans mot de passe)</button>
-        <button class="btn btn-reset" ${!accesLibre || busy ? "disabled" : ""} onclick="PointageToggle.setAccesLibre(false)">🔑 Restreindre l'accès (mot de passe requis)</button>
+        <button class="btn btn-add" ${accesLibre || busy ? "disabled" : ""} onclick="PointageCantineToggle.setAccesLibre(true)">🔓 Autoriser l'accès à tous (sans mot de passe)</button>
+        <button class="btn btn-reset" ${!accesLibre || busy ? "disabled" : ""} onclick="PointageCantineToggle.setAccesLibre(false)">🔑 Restreindre l'accès (mot de passe requis)</button>
       </div>
       <div style="margin-top:8px; font-size:0.8rem; color:var(--text-muted);">Accès : ${accesLibre ? "ouvert à tous 🔓" : "protégé par mot de passe 🔑"}</div>
     `;
@@ -203,6 +205,6 @@
     btn.innerText = isAdmin ? "🔓 Déconnexion Admin" : "🔒 Connexion Admin";
   }
 
-  window.PointageToggle = { toggleAdmin, setActif, setAccesLibre, tryUnlock };
+  window.PointageCantineToggle = { toggleAdmin, setActif, setAccesLibre, tryUnlock };
   document.addEventListener("DOMContentLoaded", load);
 })();

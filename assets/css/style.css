@@ -63,9 +63,10 @@ img { max-width: 100%; display: block; }
 
 .site-nav .container {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
-  gap: 28px;
+  gap: 12px 28px;
   min-height: 68px;
   padding-top: 8px;
   padding-bottom: 8px;
@@ -79,6 +80,8 @@ img { max-width: 100%; display: block; }
   font-weight: 800;
   font-size: 1.15rem;
   letter-spacing: 0.02em;
+  flex-shrink: 0;
+  white-space: nowrap;
 }
 .brand .crest {
   height: 108px;
@@ -87,7 +90,7 @@ img { max-width: 100%; display: block; }
 }
 .brand .crest img { height: 100%; width: auto; object-fit: contain; display: block; }
 
-@media (max-width: 900px) {
+@media (max-width: 1180px) {
   .brand .crest { height: 64px; }
 }
 
@@ -134,7 +137,7 @@ img { max-width: 100%; display: block; }
   font-size: 1.6rem; cursor: pointer;
 }
 
-@media (max-width: 900px) {
+@media (max-width: 1180px) {
   .nav-toggle { display: block; }
   .nav-links {
     display: none;
@@ -226,6 +229,11 @@ img { max-width: 100%; display: block; }
   border: 1px solid var(--border);
   border-radius: 8px;
   display: block;
+}
+#pointageAdminControls.admin-only {
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
 }
 @media (max-width: 700px) {
   .intro-row { flex-direction: column; }
