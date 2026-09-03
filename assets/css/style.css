@@ -236,6 +236,51 @@ img { max-width: 100%; display: block; }
   .pointage-card { padding: 10px; }
 }
 
+.rule-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 22px 32px;
+  margin: 24px 0 32px;
+}
+.rule-item { display: flex; gap: 14px; align-items: flex-start; }
+.rule-num {
+  flex-shrink: 0;
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  background: var(--forest);
+  color: #fff;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 800; font-size: 0.95rem;
+}
+.rule-item h3 { margin: 2px 0 4px; }
+.rule-item p { margin-bottom: 0; }
+@media (max-width: 700px) {
+  .rule-grid { grid-template-columns: 1fr; }
+}
+
+.horaires-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 14px;
+  margin: 20px 0 32px;
+}
+.horaire-item {
+  background: var(--knockout-header);
+  color: #fff;
+  border-radius: var(--radius);
+  padding: 16px;
+  text-align: center;
+}
+.horaire-jour {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  opacity: 0.85;
+  margin-bottom: 8px;
+}
+.horaire-jour span { display: block; font-size: 0.7rem; text-transform: none; letter-spacing: 0; opacity: 0.7; }
+.horaire-heure { font-size: 1.7rem; font-weight: 800; color: var(--gold); }
+
 .card-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
