@@ -289,6 +289,84 @@ img { max-width: 100%; display: block; }
 .horaire-jour span { display: block; font-size: 0.7rem; text-transform: none; letter-spacing: 0; opacity: 0.7; }
 .horaire-heure { font-size: 1.7rem; font-weight: 800; color: var(--gold); }
 
+/* ---------- Palmarès du Conseil de maison ---------- */
+
+.palmares-level { margin-top: 30px; }
+.palmares-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  border-bottom: 2px solid var(--forest);
+  padding-bottom: 6px;
+}
+.palmares-head h3 {
+  margin: 0;
+  font-size: 1.15rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--forest);
+}
+.palmares-head span { font-size: 0.85rem; font-weight: 700; color: var(--text-muted); }
+.palmares-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 11px 0;
+  border-bottom: 1px solid var(--border);
+}
+.rank-pill {
+  flex-shrink: 0;
+  min-width: 46px;
+  text-align: center;
+  background: var(--gold);
+  color: #fff;
+  font-weight: 800;
+  font-size: 0.8rem;
+  border-radius: 999px;
+  padding: 3px 12px;
+  white-space: nowrap;
+}
+.palmares-name { flex: 1; min-width: 0; font-size: 1.05rem; color: var(--text); }
+.palmares-name strong { font-weight: 800; color: var(--ink); }
+.class-pill {
+  flex-shrink: 0;
+  border: 1.5px solid var(--forest);
+  color: var(--forest);
+  border-radius: 999px;
+  padding: 2px 12px;
+  font-weight: 700;
+  font-size: 0.85rem;
+  white-space: nowrap;
+}
+.palmares-tie {
+  background: #f6f1e3;
+  border: 1px solid var(--gold);
+  border-radius: 10px;
+  padding: 12px 14px;
+  margin-top: 10px;
+}
+.palmares-tie-main { display: flex; align-items: center; flex-wrap: wrap; gap: 10px 14px; }
+.palmares-tie .palmares-name { flex: 1 1 200px; }
+.palmares-tie .class-pill { margin-left: 6px; }
+.tie-eq { font-weight: 800; color: var(--gold-dark); font-size: 1.2rem; }
+.palmares-note { margin: 8px 0 0 !important; font-size: 0.85rem; font-style: italic; color: var(--text-muted); }
+.palmares-summary {
+  margin: 36px 0 18px;
+  background: var(--forest);
+  color: #fff;
+  border-radius: var(--radius);
+  padding: 16px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 6px 14px;
+  text-align: center;
+}
+.palmares-summary .big { font-size: 2.2rem; font-weight: 800; color: var(--gold); line-height: 1; }
+.palmares-cta { text-align: center; font-style: italic; font-weight: 600; color: var(--forest); }
+
 .card-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
