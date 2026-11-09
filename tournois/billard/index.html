@@ -24,6 +24,24 @@
 
 <main class="tournoi-page">
   <div class="container">
+    <section class="tournoi-infos">
+      <div class="tournoi-infos-main">
+        <h2>Inscriptions &amp; informations</h2>
+        <span id="billardStatus" class="tournoi-status">Édition 2026-2027</span>
+        <div class="info-tiles">
+          <div class="info-tile"><div class="tile-label">Inscriptions</div><div class="tile-value">9 → 13 nov.</div><div class="tile-sub">Feuille au bureau de l'Abbaye</div></div>
+          <div class="info-tile"><div class="tile-label">Compétition</div><div class="tile-value">16 nov. → 11 déc.</div><div class="tile-sub">Pause déjeuner · 12h10 – 13h20</div></div>
+          <div class="info-tile"><div class="tile-label">Format</div><div class="tile-value">En duo</div><div class="tile-sub">Masculin &amp; Féminin · 16 duos max. par tournoi</div></div>
+          <div class="info-tile"><div class="tile-label">Remise des prix</div><div class="tile-value">Olympiades des Maisons</div><div class="tile-sub">Mai 2027</div></div>
+        </div>
+        <p style="color:var(--text-muted); font-size:0.9rem; margin-bottom:12px;">Trouve ton partenaire et inscris ton duo au bureau de l'Abbaye. Premiers inscrits, premiers servis !</p>
+        <div class="tournoi-actions">
+          <a class="btn btn-primary" href="reglement.html">📖 Lire le règlement complet</a>
+        </div>
+      </div>
+      <img class="tournoi-infos-poster" src="../../assets/img/affiche-billard.jpg" alt="Affiche du tournoi de billard de la Maison Abbaye 2026">
+    </section>
+
     <p id="syncStatus" class="sync-status">Chargement…</p>
 
     <div class="main-grid">
@@ -64,7 +82,7 @@
     <div class="prose" style="margin-top:32px;">
       <h2>Pages liées</h2>
       <ul>
-        <li><a href="reglement.html">Règlement du tournoi</a></li>
+        <li><a href="reglement.html">Règlement du tournoi et inscriptions</a></li>
       </ul>
     </div>
   </div>
@@ -84,5 +102,24 @@
   };
 </script>
 <script src="../../assets/js/tournoi.js"></script>
+<script>
+  // Statut du tournoi selon la date du jour
+  (function () {
+    var el = document.getElementById("billardStatus");
+    if (!el) return;
+    var now = new Date();
+    var d = function (y, m, j, h, mi) { return new Date(y, m - 1, j, h || 0, mi || 0); };
+    var openFrom = d(2026, 11, 9), openTo = d(2026, 11, 13, 23, 59);
+    var liveFrom = d(2026, 11, 16), liveTo = d(2026, 12, 11, 23, 59);
+    var txt, cls;
+    if (now < openFrom) { txt = "Inscriptions à partir du 9 novembre"; cls = ""; }
+    else if (now <= openTo) { txt = "✅ Inscriptions ouvertes — clôture le vendredi 13 novembre"; cls = "is-open"; }
+    else if (now < liveFrom) { txt = "Inscriptions closes — début de la compétition le 16 novembre"; cls = "is-closed"; }
+    else if (now <= liveTo) { txt = "🎱 Compétition en cours jusqu'au 11 décembre"; cls = "is-live"; }
+    else { txt = "Compétition terminée — rendez-vous aux Olympiades des Maisons (mai 2027)"; cls = ""; }
+    el.textContent = txt;
+    if (cls) el.classList.add(cls);
+  })();
+</script>
 </body>
 </html>
