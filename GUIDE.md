@@ -103,3 +103,14 @@ la page (ce n'est pas une vraie sécurité, seulement un frein à la saisie
 accidentelle). C'est adapté pour un usage interne (scores sportifs, non
 sensibles). Ne réutilisez jamais ce token pour autre chose, et vous pouvez le
 révoquer à tout moment depuis https://airtable.com/create/tokens.
+
+## Mise en page des tableaux de tournois (15/11/2026)
+
+Les pages de tournoi affichent désormais les rencontres en texte lisible (jour, heure, n° de match,
+groupe, équipe + joueurs, score) et en « cartes » sur smartphone. Le classement est séparé par
+catégorie (Masculin / Féminin) quand le champ Catégorie est rempli dans Airtable, et les phases
+« Phase 2 » et « Petite finale » sont prises en compte.
+
+**Revenir à l'ancienne mise en page** : l'ancienne version est conservée dans la branche GitHub
+`sauvegarde-mise-en-page-2026-11-15` (et l'ancien moteur dans `assets/js/tournoi-ancienne-version.js`).
+Il suffit de demander à Claude : « remets l'ancienne mise en page des tournois ».

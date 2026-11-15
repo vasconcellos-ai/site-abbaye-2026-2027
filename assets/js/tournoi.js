@@ -21,8 +21,12 @@
     { id: "1/8 de finale", title: "🥊 1/8èmes de Finale" },
     { id: "1/4 de finale", title: "🥉 1/4 de Finale" },
     { id: "Demi-finale", title: "🥈 Demi-Finales" },
+    { id: "Petite finale", title: "🥉 Petite finale (3e place)" },
     { id: "Finale", title: "🏆 Finale" },
   ];
+  // Phases comptées dans le tableau "Phase de poule" et dans le classement
+  const GROUP_PHASES = ["Poule", "Phase 2"];
+  const isGroupPhase = (p) => GROUP_PHASES.includes(p);
 
   let isAdmin = false;
   let records = [];
@@ -128,131 +132,193 @@
   // ---------- Rendu ----------
 
   function renderHeaderText() {
+    const legend = document.getElementById("pointsLegend");
+    if (legend && cfg().points) {
+      const p = cfg().points;
+      legend.innerText = `V=${p.win}pts | N=${p.draw}pts | D=${p.loss}pt`;
+    }
     document.getElementById("headerTitle").innerText = cfg().title;
     document.getElementById("headerSub").innerText = cfg().subtitle;
     document.getElementById("tabTag").innerText = cfg().tag;
   }
 
+  // ---------- Aides d'affichage (mode lecture) ----------
+
+  const MOIS = ["janv.", "févr.", "mars", "avr.", "mai", "juin", "juil.", "août", "sept.", "oct.", "nov.", "déc."];
+  const JOURS = ["dim.", "lun.", "mar.", "mer.", "jeu.", "ven.", "sam."];
+  function fmtDate(iso) {
+    if (!iso) return "";
+    const [y, m, d] = iso.split("-").map(Number);
+    const dt = new Date(y, m - 1, d);
+    return `${JOURS[dt.getDay()]} ${d} ${MOIS[m - 1]}`;
+  }
+  // "Équipe F (KONG A SIOU / ZEKIRI)" -> nom d'équipe + joueurs sur 2 lignes
+  function teamHtml(name, fallback) {
+    const txt = (name || "").trim();
+    if (!txt) return `<span class="m-team m-empty">${fallback}</span>`;
+    const m = txt.match(/^(.*?)\s*\((.*)\)\s*$/);
+    if (m) return `<span class="m-team">${escapeHtml(m[1])}</span><span class="m-players">${escapeHtml(m[2])}</span>`;
+    return `<span class="m-team">${escapeHtml(txt)}</span>`;
+  }
+  function scoreHtml(f) {
+    const has1 = Number.isInteger(f.Score1), has2 = Number.isInteger(f.Score2);
+    if (!has1 && !has2) return `<span class="m-score m-pending">– : –</span>`;
+    return `<span class="m-score">${has1 ? f.Score1 : "–"} : ${has2 ? f.Score2 : "–"}</span>`;
+  }
+  function metaHtml(f) {
+    const bits = [];
+    if (f.Heure) bits.push(escapeHtml(f.Heure));
+    if (f["N° match"]) bits.push(`Match ${f["N° match"]}`);
+    if (f.Groupe) bits.push(escapeHtml(f.Groupe));
+    return bits.length ? `<span class="m-meta">${bits.join(" · ")}</span>` : "";
+  }
+  function sortMatches(a, b) {
+    const fa = a.fields, fb = b.fields;
+    return (fa.Date || "").localeCompare(fb.Date || "") || (fa.Heure || "").localeCompare(fb.Heure || "") || (fa.Ordre || 0) - (fb.Ordre || 0);
+  }
+  // Liste des catégories présentes (Masculin / Féminin) — vide si non renseignées
+  function categories() {
+    const set = [];
+    records.forEach((r) => { const c = r.fields["Catégorie"]; if (c && !set.includes(c)) set.push(c); });
+    return set.length > 1 ? set.sort() : [];
+  }
+
+  // Une ligne de match : lecture (texte) ou admin (champs modifiables)
+  function matchRow(m, placeholder1, placeholder2) {
+    const f = m.fields;
+    if (!isAdmin) {
+      return `
+          <tr class="match-row">
+            <td class="c-date"><span class="m-date">${fmtDate(f.Date)}</span>${metaHtml(f)}</td>
+            <td class="c-t1">${teamHtml(f.Equipe1, placeholder1)}</td>
+            <td class="c-score">${scoreHtml(f)}</td>
+            <td class="c-t2">${teamHtml(f.Equipe2, placeholder2)}</td>
+            <td class="admin-only"></td>
+          </tr>`;
+    }
+    const s1 = f.Score1 ?? "";
+    const s2 = f.Score2 ?? "";
+    return `
+          <tr class="match-row is-edit">
+            <td class="c-date"><input type="date" value="${f.Date || ""}" onchange="Tournoi.updateField('${m.id}','Date',this.value)">${metaHtml(f)}</td>
+            <td class="c-t1"><input type="text" value="${escapeAttr(f.Equipe1 || "")}" placeholder="${placeholder1}" onchange="Tournoi.updateField('${m.id}','Equipe1',this.value)"></td>
+            <td class="c-score">
+              <input type="number" min="0" value="${s1}" placeholder="0" onchange="Tournoi.updateField('${m.id}','Score1',this.value)">
+              <span>x</span>
+              <input type="number" min="0" value="${s2}" placeholder="0" onchange="Tournoi.updateField('${m.id}','Score2',this.value)">
+            </td>
+            <td class="c-t2"><input type="text" value="${escapeAttr(f.Equipe2 || "")}" placeholder="${placeholder2}" onchange="Tournoi.updateField('${m.id}','Equipe2',this.value)"></td>
+            <td class="admin-only"><button class="btn btn-delete" onclick="Tournoi.remove('${m.id}')">✕</button></td>
+          </tr>`;
+  }
+  function sectionRow(label) {
+    return `<tr class="section-row"><td colspan="5">${escapeHtml(label)}</td></tr>`;
+  }
+
   function renderPouleTable() {
     const tbody = document.getElementById("pouleTableBody");
     if (!tbody) return;
-    const matches = records
-      .filter((r) => r.fields.Phase === "Poule")
-      .sort((a, b) => (a.fields.Ordre || 0) - (b.fields.Ordre || 0) || (a.fields.Date || "").localeCompare(b.fields.Date || ""));
+    tbody.closest("table").classList.add("match-table", "has-day-headers");
+    const matches = records.filter((r) => isGroupPhase(r.fields.Phase)).sort(sortMatches);
 
     if (matches.length === 0) {
       tbody.innerHTML = `<tr><td colspan="${isAdmin ? 5 : 4}" style="color:#94a3b8; padding:20px;">Aucune rencontre programmée${isAdmin ? '. Cliquez sur "+ Rencontre".' : "."}</td></tr>`;
       return;
     }
 
-    tbody.innerHTML = matches
-      .map((m) => {
-        const f = m.fields;
-        const s1 = f.Score1 ?? "";
-        const s2 = f.Score2 ?? "";
-        const disabled = isAdmin ? "" : "disabled";
-        return `
-          <tr>
-            <td><input type="date" value="${f.Date || ""}" ${disabled} onchange="Tournoi.updateField('${m.id}','Date',this.value)"></td>
-            <td><input type="text" value="${escapeAttr(f.Equipe1 || "")}" placeholder="Équipe 1" ${disabled} onchange="Tournoi.updateField('${m.id}','Equipe1',this.value)"></td>
-            <td>
-              <input type="number" min="0" value="${s1}" placeholder="0" ${disabled} onchange="Tournoi.updateField('${m.id}','Score1',this.value)">
-              <span>x</span>
-              <input type="number" min="0" value="${s2}" placeholder="0" ${disabled} onchange="Tournoi.updateField('${m.id}','Score2',this.value)">
-            </td>
-            <td><input type="text" value="${escapeAttr(f.Equipe2 || "")}" placeholder="Équipe 2" ${disabled} onchange="Tournoi.updateField('${m.id}','Equipe2',this.value)"></td>
-            <td class="admin-only"><button class="btn btn-delete" onclick="Tournoi.remove('${m.id}')">✕</button></td>
-          </tr>`;
-      })
-      .join("");
+    // Regroupement par jour (lecture) pour une liste facile à suivre sur smartphone
+    let html = "";
+    let lastDay = null;
+    matches.forEach((m) => {
+      const day = m.fields.Date || "";
+      if (!isAdmin && day !== lastDay) {
+        const [y, mo, d] = day.split("-").map(Number);
+        const label = day ? new Date(y, mo - 1, d).toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long" }) : "Date à définir";
+        html += sectionRow(label.charAt(0).toUpperCase() + label.slice(1));
+        lastDay = day;
+      }
+      html += matchRow(m, "Équipe 1", "Équipe 2");
+    });
+    tbody.innerHTML = html;
+  }
+
+  function computeStandings(matches) {
+    const pts = Object.assign({ win: 3, draw: 1, loss: 0 }, cfg().points || {});
+    const stats = {};
+    const blank = () => ({ played: 0, won: 0, drawn: 0, lost: 0, points: 0, gf: 0, ga: 0 });
+    matches.forEach((m) => {
+      const t1 = (m.fields.Equipe1 || "").trim();
+      const t2 = (m.fields.Equipe2 || "").trim();
+      if (t1 && !stats[t1]) stats[t1] = blank();
+      if (t2 && !stats[t2]) stats[t2] = blank();
+      const s1 = m.fields.Score1, s2 = m.fields.Score2;
+      if (t1 && t2 && Number.isInteger(s1) && Number.isInteger(s2)) {
+        stats[t1].played++; stats[t2].played++;
+        stats[t1].gf += s1; stats[t1].ga += s2;
+        stats[t2].gf += s2; stats[t2].ga += s1;
+        if (s1 > s2) { stats[t1].won++; stats[t1].points += pts.win; stats[t2].lost++; stats[t2].points += pts.loss; }
+        else if (s1 < s2) { stats[t2].won++; stats[t2].points += pts.win; stats[t1].lost++; stats[t1].points += pts.loss; }
+        else { stats[t1].drawn++; stats[t1].points += pts.draw; stats[t2].drawn++; stats[t2].points += pts.draw; }
+      }
+    });
+    return Object.keys(stats)
+      .map((name) => ({ name, ...stats[name], diff: stats[name].gf - stats[name].ga }))
+      .sort((a, b) => b.points - a.points || b.diff - a.diff || b.gf - a.gf || a.name.localeCompare(b.name));
   }
 
   function renderStandings() {
     const tbody = document.getElementById("standingsTableBody");
     if (!tbody) return;
-    const matches = records.filter((r) => r.fields.Phase === "Poule");
-    const stats = {};
+    tbody.closest("table").classList.add("standings-compact");
+    const all = records.filter((r) => isGroupPhase(r.fields.Phase));
+    const cats = categories();
+    const groups = cats.length ? cats.map((c) => ({ label: c, list: all.filter((r) => r.fields["Catégorie"] === c) })) : [{ label: null, list: all }];
 
-    matches.forEach((m) => {
-      const t1 = (m.fields.Equipe1 || "").trim();
-      const t2 = (m.fields.Equipe2 || "").trim();
-      if (t1 && !stats[t1]) stats[t1] = { played: 0, won: 0, drawn: 0, lost: 0, points: 0, gf: 0, ga: 0 };
-      if (t2 && !stats[t2]) stats[t2] = { played: 0, won: 0, drawn: 0, lost: 0, points: 0, gf: 0, ga: 0 };
-    });
-
-    matches.forEach((m) => {
-      const t1 = (m.fields.Equipe1 || "").trim();
-      const t2 = (m.fields.Equipe2 || "").trim();
-      const s1 = m.fields.Score1;
-      const s2 = m.fields.Score2;
-      if (t1 && t2 && Number.isInteger(s1) && Number.isInteger(s2)) {
-        stats[t1].played++; stats[t2].played++;
-        stats[t1].gf += s1; stats[t1].ga += s2;
-        stats[t2].gf += s2; stats[t2].ga += s1;
-        if (s1 > s2) { stats[t1].won++; stats[t1].points += 3; stats[t2].lost++; }
-        else if (s1 < s2) { stats[t2].won++; stats[t2].points += 3; stats[t1].lost++; }
-        else { stats[t1].drawn++; stats[t1].points++; stats[t2].drawn++; stats[t2].points++; }
-      }
-    });
-
-    const sorted = Object.keys(stats)
-      .map((name) => ({ name, ...stats[name], diff: stats[name].gf - stats[name].ga }))
-      .sort((a, b) => b.points - a.points || b.diff - a.diff);
-
-    if (sorted.length === 0) {
-      tbody.innerHTML = `<tr><td colspan="7" style="color:#94a3b8; padding:15px;">Aucune équipe / score enregistré.</td></tr>`;
-      return;
-    }
-
-    tbody.innerHTML = sorted
-      .map(
-        (t, i) => `
+    let html = "";
+    groups.forEach((g) => {
+      const sorted = computeStandings(g.list);
+      if (g.label) html += `<tr class="section-row"><td colspan="7">${escapeHtml(g.label)}</td></tr>`;
+      html += sorted
+        .map(
+          (t, i) => `
         <tr>
           <td class="rank">${i + 1}</td>
-          <td class="team-name">${escapeHtml(t.name)}</td>
+          <td class="team-name">${teamHtml(t.name, "")}</td>
           <td>${t.played}</td>
           <td>${t.won}</td>
           <td>${t.drawn}</td>
           <td>${t.lost}</td>
           <td><span class="badge-points">${t.points}</span></td>
         </tr>`
-      )
-      .join("");
+        )
+        .join("");
+    });
+    if (!html) html = `<tr><td colspan="7" style="color:#94a3b8; padding:15px;">Aucune équipe / score enregistré.</td></tr>`;
+    tbody.innerHTML = html;
   }
 
   function renderKnockout() {
     const container = document.getElementById("knockoutContainer");
     if (!container) return;
+    const cats = categories();
 
     container.innerHTML = PHASES.map((phase) => {
-      const matches = records
-        .filter((r) => r.fields.Phase === phase.id)
-        .sort((a, b) => (a.fields.Ordre || 0) - (b.fields.Ordre || 0) || (a.fields.Date || "").localeCompare(b.fields.Date || ""));
+      const matches = records.filter((r) => r.fields.Phase === phase.id).sort(sortMatches);
+      // une phase vide n'est affichée qu'en mode admin (pour pouvoir y ajouter un match)
+      if (matches.length === 0 && !isAdmin && records.length > 0) return "";
 
       let rowsHtml;
       if (matches.length === 0) {
         rowsHtml = `<tr><td colspan="${isAdmin ? 5 : 4}" style="color:#94a3b8; padding:15px;">Aucun match dans cette phase.</td></tr>`;
-      } else {
-        rowsHtml = matches
-          .map((m) => {
-            const f = m.fields;
-            const s1 = f.Score1 ?? "";
-            const s2 = f.Score2 ?? "";
-            const disabled = isAdmin ? "" : "disabled";
-            return `
-              <tr>
-                <td style="width:18%;"><input type="date" value="${f.Date || ""}" ${disabled} onchange="Tournoi.updateField('${m.id}','Date',this.value)"></td>
-                <td style="width:32%;"><input type="text" value="${escapeAttr(f.Equipe1 || "")}" placeholder="Équipe / Joueur 1" ${disabled} onchange="Tournoi.updateField('${m.id}','Equipe1',this.value)"></td>
-                <td style="width:14%;">
-                  <input type="number" min="0" value="${s1}" placeholder="0" ${disabled} onchange="Tournoi.updateField('${m.id}','Score1',this.value)">
-                  <span>x</span>
-                  <input type="number" min="0" value="${s2}" placeholder="0" ${disabled} onchange="Tournoi.updateField('${m.id}','Score2',this.value)">
-                </td>
-                <td style="width:32%;"><input type="text" value="${escapeAttr(f.Equipe2 || "")}" placeholder="Équipe / Joueur 2" ${disabled} onchange="Tournoi.updateField('${m.id}','Equipe2',this.value)"></td>
-                <td class="admin-only" style="width:4%;"><button class="btn btn-delete" onclick="Tournoi.remove('${m.id}')">✕</button></td>
-              </tr>`;
+      } else if (cats.length && !isAdmin) {
+        rowsHtml = cats
+          .map((c) => {
+            const list = matches.filter((m) => m.fields["Catégorie"] === c);
+            return list.length ? sectionRow(c) + list.map((m) => matchRow(m, "À déterminer", "À déterminer")).join("") : "";
           })
           .join("");
+      } else {
+        rowsHtml = matches.map((m) => matchRow(m, "Équipe / Joueur 1", "Équipe / Joueur 2")).join("");
       }
 
       return `
@@ -262,10 +328,10 @@
             <button class="btn btn-add admin-only" onclick="Tournoi.add('${phase.id}')">+ Match (${phase.title})</button>
           </div>
           <div class="table-wrapper">
-            <table>
+            <table class="match-table">
               <thead>
                 <tr>
-                  <th>Date</th><th>Équipe / Joueur 1</th><th>Score</th><th>Équipe / Joueur 2</th><th class="admin-only"></th>
+                  <th style="width:18%;">Date</th><th style="width:32%;">Équipe 1</th><th style="width:14%;">Score</th><th style="width:32%;">Équipe 2</th><th class="admin-only" style="width:4%;"></th>
                 </tr>
               </thead>
               <tbody>${rowsHtml}</tbody>

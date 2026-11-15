@@ -52,7 +52,7 @@
         </div>
         <div class="table-wrapper">
           <table>
-            <thead><tr><th style="width:18%;">Date</th><th style="width:28%;">Joueur</th><th style="width:20%;">Score</th><th style="width:28%;">Joueur</th><th class="admin-only" style="width:6%;"></th></tr></thead>
+            <thead><tr><th style="width:18%;">Date</th><th style="width:28%;">Équipe 1</th><th style="width:20%;">Score</th><th style="width:28%;">Équipe 2</th><th class="admin-only" style="width:6%;"></th></tr></thead>
             <tbody id="pouleTableBody"></tbody>
           </table>
         </div>
@@ -61,11 +61,11 @@
       <section class="card">
         <div class="card-header">
           <h2 class="card-title">🏆 Classement</h2>
-          <span style="font-size:0.8rem;color:var(--text-muted);">V=3pts | N=1pt | D=0pt</span>
+          <span id="pointsLegend" style="font-size:0.8rem;color:var(--text-muted);">V=3pts | N=2pts | D=1pt</span>
         </div>
         <div class="table-wrapper">
           <table class="standings-table">
-            <thead><tr><th style="width:10%;">#</th><th style="width:40%;text-align:left;">Joueur</th><th style="width:12%;">J</th><th style="width:12%;">V</th><th style="width:12%;">N</th><th style="width:12%;">D</th><th style="width:14%;">Pts</th></tr></thead>
+            <thead><tr><th style="width:10%;">#</th><th style="width:40%;text-align:left;">Équipe</th><th style="width:12%;">J</th><th style="width:12%;">V</th><th style="width:12%;">N</th><th style="width:12%;">D</th><th style="width:14%;">Pts</th></tr></thead>
             <tbody id="standingsTableBody"></tbody>
           </table>
         </div>
@@ -98,6 +98,7 @@
     tournoi: "Billard",
     title: "Tournoi de Billard",
     subtitle: "Phase de poule, classement et phases éliminatoires (2026-2027)",
+    points: { win: 3, draw: 2, loss: 1 }, // barème du règlement 2026-2027
     tag: "🎱 Billard"
   };
 </script>
