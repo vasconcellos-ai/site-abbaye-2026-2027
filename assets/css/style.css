@@ -703,3 +703,23 @@ body.is-admin [contenteditable="true"]:focus {
   /* Classement */
   .standings-table th, .standings-table td { padding: 8px 4px; font-size: 0.85rem; }
 }
+
+/* ==========================================================================
+   Code couleur Masculin (vert) / Féminin (rouge) — 16/11/2026
+   ========================================================================== */
+:root { --masc: #1e7b45; --masc-bg: #e6f4ea; --fem: #c0392b; --fem-bg: #fdecea; }
+tr.cat-masculin > td { background: var(--masc-bg); }
+tr.cat-feminin > td { background: var(--fem-bg); }
+tr.cat-masculin > td:first-child { box-shadow: inset 4px 0 0 var(--masc); }
+tr.cat-feminin > td:first-child { box-shadow: inset 4px 0 0 var(--fem); }
+tr.cat-masculin .m-team, tr.cat-masculin .team-name .m-team { color: var(--masc); }
+tr.cat-feminin .m-team, tr.cat-feminin .team-name .m-team { color: var(--fem); }
+tr.cat-masculin .m-score { background: #cfead8; }
+tr.cat-feminin .m-score { background: #f8d3cf; }
+tr.section-row.cat-masculin > td { background: var(--masc); color: #fff; box-shadow: none; }
+tr.section-row.cat-feminin > td { background: var(--fem); color: #fff; box-shadow: none; }
+@media (max-width: 700px) {
+  body:not(.is-admin) .match-table tr.match-row.cat-masculin { background: var(--masc-bg); border-left: 4px solid var(--masc); border-radius: 6px; margin: 6px 0; padding-left: 8px; }
+  body:not(.is-admin) .match-table tr.match-row.cat-feminin { background: var(--fem-bg); border-left: 4px solid var(--fem); border-radius: 6px; margin: 6px 0; padding-left: 8px; }
+  body:not(.is-admin) .match-table tr.match-row.cat-masculin > td, body:not(.is-admin) .match-table tr.match-row.cat-feminin > td { background: transparent; box-shadow: none; }
+}

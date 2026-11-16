@@ -180,15 +180,24 @@
   function categories() {
     const set = [];
     records.forEach((r) => { const c = r.fields["Catégorie"]; if (c && !set.includes(c)) set.push(c); });
-    return set.length > 1 ? set.sort() : [];
+    return set.length > 1 ? set.sort((a, b) => (catClass(a) === "cat-masculin" ? -1 : 0) - (catClass(b) === "cat-masculin" ? -1 : 0) || a.localeCompare(b)) : [];
   }
 
   // Une ligne de match : lecture (texte) ou admin (champs modifiables)
+  // Code couleur par catégorie : Masculin = vert, Féminin = rouge
+  function catClass(cat) {
+    const c = (cat || "").toLowerCase();
+    if (c.startsWith("masc")) return "cat-masculin";
+    if (c.startsWith("fém") || c.startsWith("fem")) return "cat-feminin";
+    return "";
+  }
+
   function matchRow(m, placeholder1, placeholder2) {
     const f = m.fields;
+    const cc = catClass(f["Catégorie"]);
     if (!isAdmin) {
       return `
-          <tr class="match-row">
+          <tr class="match-row ${cc}">
             <td class="c-date"><span class="m-date">${fmtDate(f.Date)}</span>${metaHtml(f)}</td>
             <td class="c-t1">${teamHtml(f.Equipe1, placeholder1)}</td>
             <td class="c-score">${scoreHtml(f)}</td>
@@ -199,7 +208,7 @@
     const s1 = f.Score1 ?? "";
     const s2 = f.Score2 ?? "";
     return `
-          <tr class="match-row is-edit">
+          <tr class="match-row is-edit ${cc}">
             <td class="c-date"><input type="date" value="${f.Date || ""}" onchange="Tournoi.updateField('${m.id}','Date',this.value)">${metaHtml(f)}</td>
             <td class="c-t1"><input type="text" value="${escapeAttr(f.Equipe1 || "")}" placeholder="${placeholder1}" onchange="Tournoi.updateField('${m.id}','Equipe1',this.value)"></td>
             <td class="c-score">
@@ -212,7 +221,7 @@
           </tr>`;
   }
   function sectionRow(label) {
-    return `<tr class="section-row"><td colspan="5">${escapeHtml(label)}</td></tr>`;
+    return `<tr class="section-row ${catClass(label)}"><td colspan="5">${escapeHtml(label)}</td></tr>`;
   }
 
   function renderPouleTable() {
@@ -277,11 +286,11 @@
     let html = "";
     groups.forEach((g) => {
       const sorted = computeStandings(g.list);
-      if (g.label) html += `<tr class="section-row"><td colspan="7">${escapeHtml(g.label)}</td></tr>`;
+      if (g.label) html += `<tr class="section-row ${catClass(g.label)}"><td colspan="7">${escapeHtml(g.label)}</td></tr>`;
       html += sorted
         .map(
           (t, i) => `
-        <tr>
+        <tr class="${catClass(g.label || (g.list[0] && g.list[0].fields["Catégorie"]))}">
           <td class="rank">${i + 1}</td>
           <td class="team-name">${teamHtml(t.name, "")}</td>
           <td>${t.played}</td>
