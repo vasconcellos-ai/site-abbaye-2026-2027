@@ -30,6 +30,7 @@
 
   let isAdmin = false;
   let records = [];
+  let groupFilter = ""; // filtre du tableau des rencontres ("" = tous les matchs)
 
   function cfg() {
     return window.TOURNOI_CONFIG;
@@ -228,7 +229,11 @@
     const tbody = document.getElementById("pouleTableBody");
     if (!tbody) return;
     tbody.closest("table").classList.add("match-table", "has-day-headers");
-    const matches = records.filter((r) => isGroupPhase(r.fields.Phase)).sort(sortMatches);
+    renderGroupFilter(tbody);
+    const matches = records
+      .filter((r) => isGroupPhase(r.fields.Phase))
+      .filter((r) => !groupFilter || groupKey(r.fields) === groupFilter)
+      .sort(sortMatches);
 
     if (matches.length === 0) {
       tbody.innerHTML = `<tr><td colspan="${isAdmin ? 5 : 4}" style="color:#94a3b8; padding:20px;">Aucune rencontre programmée${isAdmin ? '. Cliquez sur "+ Rencontre".' : "."}</td></tr>`;
@@ -350,8 +355,126 @@
     }).join("");
   }
 
+
+  // ---------- Composition des groupes ----------
+
+  // Clé unique d'un groupe : "Masculin|Groupe 1" (la catégorie évite de mélanger les groupes M/F)
+  function groupKey(f) {
+    return (f["Catégorie"] || "") + "|" + (f.Groupe || "");
+  }
+  // Nom court affiché ; la couleur (vert/rouge) indique la catégorie
+  function groupLabel(key) {
+    const [cat, grp] = key.split("|");
+    return grp === "Groupe unique" && cat ? cat : grp;
+  }
+  // Groupes de la phase de poule (hors matchs croisés "Groupe 1 x Groupe 2")
+  function pouleGroups() {
+    const map = new Map();
+    records
+      .filter((r) => r.fields.Phase === "Poule" && r.fields.Groupe && !/\sx\s/i.test(r.fields.Groupe))
+      .forEach((r) => {
+        const k = groupKey(r.fields);
+        if (!map.has(k)) map.set(k, []);
+        map.get(k).push(r);
+      });
+    const order = (k) => (catClass(k.split("|")[0]) === "cat-feminin" ? 1 : 0);
+    return [...map.entries()].sort((a, b) => order(a[0]) - order(b[0]) || a[0].localeCompare(b[0], "fr", { numeric: true }));
+  }
+  function teamLetter(name) {
+    const m = (name || "").match(/^[ÉE]quipe\s+([A-Z0-9]+)/i);
+    return m ? m[1].toUpperCase() : "";
+  }
+
+  function ensureGroupsContainer() {
+    let el = document.getElementById("groupsContainer");
+    if (el) return el;
+    const anchor = document.querySelector(".main-grid");
+    if (!anchor) return null;
+    el = document.createElement("section");
+    el.id = "groupsContainer";
+    el.className = "full-width-card groups-section";
+    anchor.parentNode.insertBefore(el, anchor);
+    return el;
+  }
+
+  function renderGroups() {
+    const groups = pouleGroups();
+    const existing = document.getElementById("groupsContainer");
+    if (!groups.length) { if (existing) existing.innerHTML = ""; return; }
+    const el = ensureGroupsContainer();
+    if (!el) return;
+    const cards = groups.map(([key, list]) => {
+      const cat = key.split("|")[0];
+      const standings = computeStandings(list);
+      const anyPlayed = standings.some((t) => t.played > 0);
+      const rows = standings
+        .sort((a, b) => (anyPlayed ? 0 : teamLetter(a.name).localeCompare(teamLetter(b.name))))
+        .map((t, i) => {
+          const m = t.name.match(/^(.*?)\s*\((.*)\)\s*$/);
+          const team = m ? m[1] : t.name, players = m ? m[2] : "";
+          return `<li>
+              <span class="g-rank">${anyPlayed ? i + 1 : ""}</span>
+              <span class="g-letter">${escapeHtml(teamLetter(t.name) || "•")}</span>
+              <span class="g-team"><strong>${escapeHtml(team)}</strong>${players ? `<small>${escapeHtml(players)}</small>` : ""}</span>
+              <span class="g-stat" title="Matchs joués">${t.played} J</span>
+              <span class="g-pts" title="Points">${t.points} pt${t.points > 1 ? "s" : ""}</span>
+            </li>`;
+        })
+        .join("");
+      const active = groupFilter === key ? " is-active" : "";
+      return `<article class="group-card ${catClass(cat)}${active}">
+          <header><h3>${escapeHtml(groupLabel(key))}</h3><span>${standings.length} duos · ${list.length} matchs</span></header>
+          <ol>${rows}</ol>
+          <button class="group-see" onclick="Tournoi.filterGroup('${escapeAttr(key)}', true)">Voir les matchs de ce groupe →</button>
+        </article>`;
+    });
+    el.innerHTML = `
+      <div class="card-header" style="border-bottom:2px solid var(--border); padding-bottom:12px; margin-bottom:20px;">
+        <h2 class="card-title" style="font-size:1.5rem;">👥 Composition des groupes</h2>
+        <span style="font-size:0.8rem;color:var(--text-muted);">Classement interne au groupe · mis à jour avec les scores</span>
+      </div>
+      <div class="groups-grid">${cards.join("")}</div>`;
+  }
+
+  // Filtre (puces) au-dessus du tableau des rencontres
+  function renderGroupFilter(tbody) {
+    const wrapper = tbody.closest(".table-wrapper");
+    if (!wrapper) return;
+    let bar = document.getElementById("groupFilterBar");
+    const keys = [];
+    records.filter((r) => isGroupPhase(r.fields.Phase) && r.fields.Groupe).forEach((r) => {
+      const k = groupKey(r.fields);
+      if (!keys.includes(k)) keys.push(k);
+    });
+    if (keys.length < 2) { if (bar) bar.remove(); return; }
+    const order = (k) => (/\sx\s/i.test(k) ? 2 : catClass(k.split("|")[0]) === "cat-feminin" ? 1 : 0);
+    keys.sort((a, b) => order(a) - order(b) || a.localeCompare(b, "fr", { numeric: true }));
+    if (!bar) {
+      bar = document.createElement("div");
+      bar.id = "groupFilterBar";
+      bar.className = "group-filter";
+      wrapper.parentNode.insertBefore(bar, wrapper);
+    }
+    const chip = (k, label, cls) =>
+      `<button class="chip ${cls || ""}${groupFilter === k ? " is-active" : ""}" onclick="Tournoi.filterGroup('${escapeAttr(k)}')">${escapeHtml(label)}</button>`;
+    bar.innerHTML =
+      chip("", "Tous les matchs") +
+      keys.map((k) => chip(k, /\sx\s/i.test(k) ? "Phase 2 (croisés)" : groupLabel(k), catClass(k.split("|")[0]))).join("");
+  }
+
+  function filterGroup(key, scroll) {
+    groupFilter = groupFilter === key && !scroll ? "" : key;
+    renderGroups();
+    renderPouleTable();
+    if (scroll) {
+      const t = document.getElementById("groupFilterBar") || document.getElementById("pouleTableBody");
+      if (t) t.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  }
+
   function renderAll() {
     renderHeaderText();
+    renderGroups();
     renderPouleTable();
     renderStandings();
     renderKnockout();
@@ -418,6 +541,7 @@
     },
     updateField: (id, field, value) => withSaving(updateMatch(id, field, value)),
     toggleAdmin,
+    filterGroup,
   };
 
   document.addEventListener("DOMContentLoaded", load);

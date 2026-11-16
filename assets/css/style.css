@@ -723,3 +723,42 @@ tr.section-row.cat-feminin > td { background: var(--fem); color: #fff; box-shado
   body:not(.is-admin) .match-table tr.match-row.cat-feminin { background: var(--fem-bg); border-left: 4px solid var(--fem); border-radius: 6px; margin: 6px 0; padding-left: 8px; }
   body:not(.is-admin) .match-table tr.match-row.cat-masculin > td, body:not(.is-admin) .match-table tr.match-row.cat-feminin > td { background: transparent; box-shadow: none; }
 }
+
+/* ---------- Composition des groupes ---------- */
+.groups-section { margin-bottom: 24px; }
+.groups-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; }
+.group-card { border: 1px solid var(--border); border-radius: 12px; overflow: hidden; background: #fff; display: flex; flex-direction: column; transition: box-shadow .15s; }
+.group-card.is-active { box-shadow: 0 0 0 3px var(--gold, #c9a227); }
+.group-card header { padding: 10px 14px; background: var(--forest-dark, #1f3d2b); color: #fff; display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+.group-card header h3 { margin: 0; font-size: 1.05rem; color: #fff; }
+.group-card header span { font-size: 0.75rem; opacity: .85; white-space: nowrap; }
+.group-card.cat-masculin header { background: var(--masc); }
+.group-card.cat-feminin header { background: var(--fem); }
+.group-card ol { list-style: none; margin: 0; padding: 6px 0; flex: 1; }
+.group-card li { display: grid; grid-template-columns: 18px 28px 1fr auto auto; align-items: center; gap: 8px; padding: 7px 14px; border-bottom: 1px solid #f1f1f1; }
+.group-card li:last-child { border-bottom: none; }
+.group-card .g-rank { font-size: 0.8rem; color: var(--text-muted); text-align: center; }
+.group-card .g-letter { width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center; font-weight: 800; font-size: 0.85rem; color: #fff; background: var(--forest-dark, #1f3d2b); }
+.group-card.cat-masculin .g-letter { background: var(--masc); }
+.group-card.cat-feminin .g-letter { background: var(--fem); }
+.group-card .g-team { display: flex; flex-direction: column; line-height: 1.2; min-width: 0; }
+.group-card .g-team strong { font-size: 0.9rem; }
+.group-card .g-team small { font-size: 0.75rem; color: var(--text-muted); overflow-wrap: anywhere; }
+.group-card .g-stat { font-size: 0.75rem; color: var(--text-muted); white-space: nowrap; }
+.group-card .g-pts { font-size: 0.8rem; font-weight: 700; white-space: nowrap; background: #f3f4f6; border-radius: 999px; padding: 2px 8px; }
+.group-card.cat-masculin .g-pts { background: var(--masc-bg); color: var(--masc); }
+.group-card.cat-feminin .g-pts { background: var(--fem-bg); color: var(--fem); }
+.group-see { border: none; border-top: 1px solid var(--border); background: #fafafa; padding: 10px; font-size: 0.85rem; font-weight: 600; cursor: pointer; color: var(--forest-dark, #1f3d2b); }
+.group-see:hover { background: #f0f0f0; }
+.group-filter { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 12px; }
+.group-filter .chip { border: 1.5px solid var(--border); background: #fff; border-radius: 999px; padding: 6px 12px; font-size: 0.82rem; font-weight: 600; cursor: pointer; color: var(--text, #333); }
+.group-filter .chip.cat-masculin { border-color: var(--masc); color: var(--masc); }
+.group-filter .chip.cat-feminin { border-color: var(--fem); color: var(--fem); }
+.group-filter .chip.is-active { background: var(--forest-dark, #1f3d2b); border-color: var(--forest-dark, #1f3d2b); color: #fff; }
+.group-filter .chip.cat-masculin.is-active { background: var(--masc); color: #fff; }
+.group-filter .chip.cat-feminin.is-active { background: var(--fem); color: #fff; }
+@media (max-width: 640px) {
+  .groups-grid { grid-template-columns: 1fr; }
+  .group-card li { padding: 7px 10px; gap: 6px; }
+}
+.group-filter, #groupsContainer { scroll-margin-top: 140px; }
