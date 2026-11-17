@@ -762,3 +762,17 @@ tr.section-row.cat-feminin > td { background: var(--fem); color: #fff; box-shado
   .group-card li { padding: 7px 10px; gap: 6px; }
 }
 .group-filter, #groupsContainer { scroll-margin-top: 140px; }
+
+/* ---------- Tournoi de consolation (violet) ---------- */
+:root { --conso: #6b3fa0; --conso-bg: #f1ebf8; }
+.phase-block.is-conso .phase-header { background: var(--conso); }
+.phase-block.is-conso .phase-header h3 { color: #fff; }
+.phase-block.is-conso { border-left: 4px solid var(--conso); padding-left: 12px; }
+tr.cat-conso > td { background: var(--conso-bg); }
+tr.cat-conso > td:first-child { box-shadow: inset 4px 0 0 var(--conso); }
+tr.cat-conso .m-team { color: var(--conso); font-style: italic; }
+tr.cat-conso .m-score { background: #e2d6f1; }
+@media (max-width: 640px) {
+  body:not(.is-admin) .match-table tr.match-row.cat-conso { background: var(--conso-bg); border-left: 4px solid var(--conso); border-radius: 6px; margin: 6px 0; padding-left: 8px; }
+  body:not(.is-admin) .match-table tr.match-row.cat-conso > td { background: transparent; box-shadow: none; }
+}

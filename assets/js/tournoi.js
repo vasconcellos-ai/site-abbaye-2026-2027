@@ -23,7 +23,11 @@
     { id: "Demi-finale", title: "🥈 Demi-Finales" },
     { id: "Petite finale", title: "🥉 Petite finale (3e place)" },
     { id: "Finale", title: "🏆 Finale" },
+    { id: "Consolation - Quarts", title: "🔁 Tournoi de consolation – Quarts", conso: true },
+    { id: "Consolation - Demi-finale", title: "🔁 Tournoi de consolation – Demi-finales", conso: true },
+    { id: "Consolation - Finale", title: "🔁 Tournoi de consolation – Finale", conso: true },
   ];
+  const isConso = (p) => /^consolation/i.test(p || "");
   // Phases comptées dans le tableau "Phase de poule" et dans le classement
   const GROUP_PHASES = ["Poule", "Phase 2"];
   const isGroupPhase = (p) => GROUP_PHASES.includes(p);
@@ -195,7 +199,7 @@
 
   function matchRow(m, placeholder1, placeholder2) {
     const f = m.fields;
-    const cc = catClass(f["Catégorie"]);
+    const cc = isConso(f.Phase) ? "cat-conso" : catClass(f["Catégorie"]);
     if (!isAdmin) {
       return `
           <tr class="match-row ${cc}">
@@ -328,7 +332,7 @@
         rowsHtml = cats
           .map((c) => {
             const list = matches.filter((m) => m.fields["Catégorie"] === c);
-            return list.length ? sectionRow(c) + list.map((m) => matchRow(m, "À déterminer", "À déterminer")).join("") : "";
+            return list.length ? (phase.conso ? "" : sectionRow(c)) + list.map((m) => matchRow(m, "À déterminer", "À déterminer")).join("") : "";
           })
           .join("");
       } else {
@@ -336,7 +340,7 @@
       }
 
       return `
-        <div class="phase-block">
+        <div class="phase-block${phase.conso ? " is-conso" : ""}">
           <div class="phase-header">
             <h3>${phase.title}</h3>
             <button class="btn btn-add admin-only" onclick="Tournoi.add('${phase.id}')">+ Match (${phase.title})</button>
