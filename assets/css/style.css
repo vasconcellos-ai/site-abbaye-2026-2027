@@ -776,3 +776,5 @@ tr.cat-conso .m-score { background: #e2d6f1; }
   body:not(.is-admin) .match-table tr.match-row.cat-conso { background: var(--conso-bg); border-left: 4px solid var(--conso); border-radius: 6px; margin: 6px 0; padding-left: 8px; }
   body:not(.is-admin) .match-table tr.match-row.cat-conso > td { background: transparent; box-shadow: none; }
 }
+
+.m-forfait{display:inline-block;margin-left:6px;padding:1px 7px;border-radius:999px;background:#fdecea;color:#c0392b;font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.03em;vertical-align:middle}

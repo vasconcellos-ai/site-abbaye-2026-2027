@@ -168,7 +168,7 @@
   function scoreHtml(f) {
     const has1 = Number.isInteger(f.Score1), has2 = Number.isInteger(f.Score2);
     if (!has1 && !has2) return `<span class="m-score m-pending">– : –</span>`;
-    return `<span class="m-score">${has1 ? f.Score1 : "–"} : ${has2 ? f.Score2 : "–"}</span>`;
+    return `<span class="m-score">${has1 ? f.Score1 : "–"} : ${has2 ? f.Score2 : "–"}</span>` + (f.Forfait ? `<span class="m-forfait">Forfait</span>` : "");
   }
   function metaHtml(f) {
     const bits = [];
@@ -274,8 +274,9 @@
         stats[t1].played++; stats[t2].played++;
         stats[t1].gf += s1; stats[t1].ga += s2;
         stats[t2].gf += s2; stats[t2].ga += s1;
-        if (s1 > s2) { stats[t1].won++; stats[t1].points += pts.win; stats[t2].lost++; stats[t2].points += pts.loss; }
-        else if (s1 < s2) { stats[t2].won++; stats[t2].points += pts.win; stats[t1].lost++; stats[t1].points += pts.loss; }
+        const lossPts = m.fields.Forfait ? 0 : pts.loss; // forfait : 0 pt pour le perdant
+        if (s1 > s2) { stats[t1].won++; stats[t1].points += pts.win; stats[t2].lost++; stats[t2].points += lossPts; }
+        else if (s1 < s2) { stats[t2].won++; stats[t2].points += pts.win; stats[t1].lost++; stats[t1].points += lossPts; }
         else { stats[t1].drawn++; stats[t1].points += pts.draw; stats[t2].drawn++; stats[t2].points += pts.draw; }
       }
     });
